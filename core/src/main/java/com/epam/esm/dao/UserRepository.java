@@ -45,12 +45,12 @@ public class UserRepository {
         return Optional.ofNullable(user);
     }
 
-    public Optional<User> getByName(String name) {
+    public Optional<User> getByUsername(String username) {
         CriteriaBuilder criteria = entityManager.getCriteriaBuilder();
         CriteriaQuery<User> criteriaQuery = criteria.createQuery(User.class);
         Root<User> root = criteriaQuery.from(User.class);
 
-        criteriaQuery.where(criteria.equal(root.get("name"), name));
+        criteriaQuery.where(criteria.equal(root.get("username"), username));
         List<User> result = entityManager.
                 createQuery(criteriaQuery).
                 getResultList();

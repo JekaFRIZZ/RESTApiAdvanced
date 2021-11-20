@@ -8,6 +8,7 @@ import com.epam.esm.validator.UserValidator;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +20,8 @@ import static org.mockito.Mockito.*;
 class UserServiceTest {
     private final UserRepository mockUserRepository = mock(UserRepository.class);
     private final UserValidator mockUserValidator = mock(UserValidator.class);
-    private final UserService userService = new UserService(mockUserRepository, mockUserValidator);
+    private final BCryptPasswordEncoder mockPasswordEncoder = mock(BCryptPasswordEncoder.class);
+    private final UserService userService = new UserService(mockUserRepository, mockUserValidator, mockPasswordEncoder);
 
     private final List<User> users = new ArrayList<>();
     private final User user = new User();

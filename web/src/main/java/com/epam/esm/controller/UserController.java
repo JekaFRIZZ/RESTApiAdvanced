@@ -1,26 +1,62 @@
 package com.epam.esm.controller;
 
+import com.epam.esm.dto.AuthenticationResponseDTO;
 import com.epam.esm.dto.UserDTO;
+import com.epam.esm.dto.security.AuthenticationRequestDTO;
 import com.epam.esm.entity.User;
+import com.epam.esm.security.JwtTokenProvider;
 import com.epam.esm.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.*;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
-
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequestMapping( "/users")
 public class UserController {
 
     private final UserService userService;
+    private final AuthenticationManager authenticationManager;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService,
+                          AuthenticationManager authenticationManager,
+                          JwtTokenProvider jwtTokenProvider) {
         this.userService = userService;
+        this.authenticationManager = authenticationManager;
+        this.jwtTokenProvider = jwtTokenProvider;
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody AuthenticationRequestDTO requestDTO) {
+        String username = requestDTO.getUsername();
+        String password = requestDTO.getPassword();
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+
+        User user = userService.getByUsername(username);
+        String token = jwtTokenProvider.createToken(user);
+
+        AuthenticationResponseDTO responseDto = new AuthenticationResponseDTO(username, token);
+
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
+
+    @PostMapping("/logout")
+    public void logout(HttpServletRequest request, HttpServletResponse response) {
+        SecurityContextLogoutHandler securityContextLogoutHandler = new SecurityContextLogoutHandler();
+        securityContextLogoutHandler.logout(request, response, null);
     }
 
     /**
@@ -62,8 +98,9 @@ public class UserController {
      */
     @PostMapping
     public ResponseEntity<?> create(@RequestBody UserDTO userDTO) {
-        userService.create(userDTO);
-        return new ResponseEntity<>(userDTO, HttpStatus.CREATED);
+        Integer userId = userService.create(userDTO);
+        User user = userService.getById(userId);
+        return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
 
     /**
@@ -74,6 +111,7 @@ public class UserController {
      * @return @link ResponseEntity} with a {@link HttpStatus} alone or additionally with a {@link com.epam.esm.entity.ErrorData} object.
      */
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> deleteById(@PathVariable Integer id) {
         userService.deleteById(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);

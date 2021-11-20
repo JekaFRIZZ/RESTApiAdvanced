@@ -17,11 +17,10 @@ import java.util.List;
 @Getter
 @Setter
 @EqualsAndHashCode
-@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "gift_certificate")
+@Table(name = "certificate")
 public class GiftCertificate extends RepresentationModel<GiftCertificate> implements Identifiable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

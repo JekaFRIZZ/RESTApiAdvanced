@@ -8,6 +8,7 @@ import com.epam.esm.service.GiftCertificateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -87,6 +88,7 @@ public class GiftCertificateController {
      * @return {@link ResponseEntity} with {@link HttpStatus} alone.
      */
     @PatchMapping(value = "/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> updateById(@PathVariable Integer id, @RequestBody GiftCertificate giftCertificate) {
         giftCertificateService.update(id, giftCertificate);
         return new ResponseEntity<>(giftCertificate, HttpStatus.OK);
@@ -113,6 +115,7 @@ public class GiftCertificateController {
      * @return {@link ResponseEntity} with {@link HttpStatus} alone.
      */
     @DeleteMapping(value = "/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> delete(@PathVariable("id") Integer id) {
         giftCertificateService.deleteById(id);
         return new ResponseEntity<>(HttpStatus.OK);

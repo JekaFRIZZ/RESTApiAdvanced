@@ -7,6 +7,7 @@ import com.epam.esm.service.UserOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
@@ -85,6 +86,7 @@ public class UserOrderController {
      * @return @link ResponseEntity} with a {@link HttpStatus} alone or additionally with a {@link com.epam.esm.entity.ErrorData} object.
      */
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> deleteById(@PathVariable Integer id) {
         userOrderService.deleteById(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);

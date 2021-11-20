@@ -2,8 +2,9 @@ package com.epam.esm.configuration;
 
 import com.epam.esm.dao.GiftCertificateRepository;
 import com.epam.esm.dao.TagRepository;
-import com.epam.esm.dao.UserRepository;
 import com.epam.esm.dao.UserOrderRepository;
+import com.epam.esm.dao.UserRepository;
+import com.epam.esm.security.UserDetailsServiceImpl;
 import com.epam.esm.service.GiftCertificateService;
 import com.epam.esm.service.TagService;
 import com.epam.esm.service.UserOrderService;
@@ -18,6 +19,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -83,8 +85,13 @@ public class AppConfig implements WebMvcConfigurer {
     }
 
     @Bean
-    public UserService userService(UserRepository userRepository, UserValidator userValidator) {
-        return new UserService(userRepository, userValidator);
+    protected BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder(12);
+    }
+
+    @Bean
+    public UserService userService(UserRepository userRepository, UserValidator userValidator, BCryptPasswordEncoder passwordEncoder) {
+        return new UserService(userRepository, userValidator, passwordEncoder);
     }
 
     @Bean
