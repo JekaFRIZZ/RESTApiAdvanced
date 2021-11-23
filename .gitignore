@@ -25,8 +25,8 @@ bin/
 *.iws
 *.iml
 *.ipr
-*.properties
-*.yml
+web/src/main/resources/application.properties
+web/src/main/resources/application.yml
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
