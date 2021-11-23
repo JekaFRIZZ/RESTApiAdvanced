@@ -2,6 +2,7 @@ package com.epam.esm.configuration;
 
 import com.epam.esm.security.JwtConfigurer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.oauth2.client.EnableOAuth2Sso;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -11,8 +12,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 @EnableWebSecurity
@@ -46,13 +45,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/users/login").permitAll()
                 .antMatchers(HttpMethod.POST, "/users").permitAll()
                 .antMatchers(HttpMethod.GET, "/gifts").permitAll()
-                .antMatchers(HttpMethod.POST, "/userOrders").hasRole(USER) //work
-                .antMatchers(HttpMethod.GET, "/tags", "/users", "/userOrders").hasAnyRole(USER, ADMIN) //work
-                .antMatchers(HttpMethod.POST, "/gifts", "/tags").hasRole(ADMIN) //work
-                /*.antMatchers(HttpMethod.DELETE, "/gifts", "/tags", "/users", "/userOrders").hasRole(ADMIN)*/
-                /*.antMatchers(HttpMethod.PATCH, "/gifts").hasRole(ADMIN)*/
+                .antMatchers(HttpMethod.POST, "/userOrders").hasRole(USER)
+                .antMatchers(HttpMethod.GET, "/tags", "/users", "/userOrders").hasAnyRole(USER, ADMIN)
+                .antMatchers(HttpMethod.POST, "/gifts", "/tags").hasRole(ADMIN)
                 .anyRequest().authenticated()
                 .and()
                 .apply(jwtConfigurer);
-    }
+     }
 }
